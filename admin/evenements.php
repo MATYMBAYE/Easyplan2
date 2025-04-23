@@ -38,24 +38,68 @@
       <i class="bi bi-plus-circle me-1"></i> Ajouter un événement
     </button>
   </div>
+  <?php
+    include_once 'config.php' ;
+    $sql = "SELECT * FROM evenements";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    // var_dump($stmt);die();
+
+    // Récupération des résultats sous forme d'objets
+    $evenements = $stmt->fetchAll(PDO::FETCH_OBJ);
+   
+
+
+    if(isset($_POST['ajouter'])){
+      $titre = $_POST['titre'];
+      $description = $_POST['description'];
+      $date_evenement =  $_POST['date_evenement'];
+      // var_dump($_POST);die();
+
+      // Requête préparée
+   $sql = "INSERT INTO evenements (titre, date_evenement, description) 
+            VALUES (:titre, :date_evenement, :description)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':titre', $titre);
+    $stmt->bindParam(':date_evenement', $date_evenement);
+    $stmt->bindParam(':description', $description);
+    
+
+    // Exécution
+    if ($stmt->execute()) {
+        echo "Événement ajouté avec succès !";
+    } else {
+        echo "Erreur lors de l'ajout.";
+    }
+    }
+
+
+?>
 
   <div class="card p-4">
-    <table class="table" id="eventTable">
+    <table class="table text-center" id="eventTable">
       <thead class="table-light">
         <tr>
           <th>Titre</th>
-          <th>Date</th>
-          <th>Jour</th>
-          <th>Mois</th>
-          <th>Heure début</th>
-          <th>Heure fin</th>
+          <th>Heure de creation</th>
           <th>Description</th>
-          <th>Statut</th>
-          <th>Actions</th>
+          <th >Actions</th>
         </tr>
       </thead>
       <tbody id="eventTableBody">
-        <!-- Événements dynamiques ici -->
+        <?php  foreach($evenements as $evenement): ?>
+          <tr>
+            <td><?= $evenement->titre ?></td>
+            <td><?= $evenement->date_evenement ?></td>
+            <td><?= $evenement->description ?></td>
+            <td class="row">
+                <td class="col-6 btn btn-primary btn-sm" >   
+                      <a class="text-decoration-none text-light" href="modifier.php?id=<?= $evenement->id ?>">Modifier</a>
+                </td>
+                <td class="col-6 btn btn-danger btn-sm">supprimer</td>
+            </td>
+         </tr>  
+        <?php endforeach ; ?>
       </tbody>
     </table>
   </div>
@@ -72,38 +116,38 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="eventForm">
+        <form id="eventForm" method="POST" action="evenements.php">
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Titre</label>
-              <input type="text" class="form-control" required>
+              <input type="text" class="form-control" name="titre" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Date</label>
-              <input type="date" class="form-control" required>
+              <input type="date" class="form-control" name="date_evenement" required>
             </div>
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label class="form-label">Heure début</label>
               <input type="time" class="form-control" required>
-            </div>
-            <div class="col-md-6">
+            </div> -->
+            <!-- <div class="col-md-6">
               <label class="form-label">Heure fin</label>
               <input type="time" class="form-control" required>
-            </div>
+            </div> -->
             <div class="col-12">
               <label class="form-label">Description</label>
-              <textarea class="form-control" rows="3"></textarea>
+              <textarea class="form-control"  name="description" rows="3"></textarea>
             </div>
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label class="form-label">Statut</label>
               <select class="form-select">
                 <option value="À venir">À venir</option>
                 <option value="En cours">En cours</option>
                 <option value="Terminé">Terminé</option>
               </select>
-            </div>
+            </div> -->
             <div class="col-12 text-end">
-              <button type="submit" class="btn btn-success mt-3">
+              <button type="submit" class="btn btn-success mt-3" name="ajouter">
                 <i class="bi bi-check-circle me-1"></i> Enregistrer
               </button>
             </div>

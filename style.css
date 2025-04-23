@@ -1,0 +1,18 @@
+body {
+  background-color: #f8f9fa;
+}
+.card {
+  margin-bottom: 20px;
+}
+/* Permet au <html> et au <body> de prendre 100% de la hauteur */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Image de fond pleine page */
+body {
+  background: url('img/') no-repeat center center fixed;
+  background-size: cover; /* couvre tout l’écran en gardant les proportions */
+}
